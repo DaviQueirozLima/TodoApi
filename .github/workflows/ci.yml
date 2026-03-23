@@ -46,7 +46,7 @@ jobs:
 
       # Build da imagem Docker
       - name: Build Docker Image
-        run: docker build -t todoapi .
+        run: docker build -t todoapi ./TodoApi
 
       # Sobe container (teste básico)
       - name: Run Docker Container

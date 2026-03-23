@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TodoApi.Models;
+using TodoApi.DTOs;
 using TodoApi.Service;
 using TodoApi.Services;
 
@@ -19,8 +19,7 @@ namespace TodoApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var tasks = await _service.GetAll();
-            return Ok(tasks);
+            return Ok(await _service.GetAll());
         }
 
         [HttpGet("{id}")]
@@ -33,16 +32,16 @@ namespace TodoApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(TaskItem task)
+        public async Task<IActionResult> Create(CreateTaskDto dto)
         {
-            var created = await _service.Create(task);
+            var created = await _service.Create(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, TaskItem task)
+        public async Task<IActionResult> Update(Guid id, UpdateTaskDto dto)
         {
-            var updated = await _service.Update(id, task);
+            var updated = await _service.Update(id, dto);
             if (!updated) return NotFound();
 
             return NoContent();

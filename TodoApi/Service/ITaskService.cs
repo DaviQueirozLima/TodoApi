@@ -1,13 +1,13 @@
-﻿using TodoApi.Models;
+﻿using TodoApi.DTOs;
 
 namespace TodoApi.Service
 {
     public interface ITaskService
     {
-        Task<IEnumerable<TaskItem>> GetAll();
-        Task<TaskItem?> GetById(Guid id);
-        Task<TaskItem> Create(TaskItem task);
-        Task<bool> Update(Guid id, TaskItem updatedTask);
+        Task<IEnumerable<TaskResponseDto>> GetAll();
+        Task<TaskResponseDto?> GetById(Guid id);
+        Task<TaskResponseDto> Create(CreateTaskDto dto);
+        Task<bool> Update(Guid id, UpdateTaskDto dto);
         Task<bool> Delete(Guid id);
     }
 }

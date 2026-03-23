@@ -1,4 +1,5 @@
-﻿using TodoApi.Models;
+﻿using TodoApi.DTOs;
+using TodoApi.Models;
 using TodoApi.Repositories;
 using TodoApi.Service;
 
@@ -13,31 +14,64 @@ namespace TodoApi.Services
             _repository = repository;
         }
 
-        public async Task<IEnumerable<TaskItem>> GetAll()
+        public async Task<IEnumerable<TaskResponseDto>> GetAll()
         {
-            return await _repository.GetAll();
+            var tasks = await _repository.GetAll();
+
+            return tasks.Select(t => new TaskResponseDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                IsCompleted = t.IsCompleted,
+                CreatedAt = t.CreatedAt
+            });
         }
 
-        public async Task<TaskItem?> GetById(Guid id)
+        public async Task<TaskResponseDto?> GetById(Guid id)
         {
-            return await _repository.GetById(id);
+            var t = await _repository.GetById(id);
+            if (t == null) return null;
+
+            return new TaskResponseDto
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Description = t.Description,
+                IsCompleted = t.IsCompleted,
+                CreatedAt = t.CreatedAt
+            };
         }
 
-        public async Task<TaskItem> Create(TaskItem task)
+        public async Task<TaskResponseDto> Create(CreateTaskDto dto)
         {
+            var task = new TaskItem
+            {
+                Title = dto.Title,
+                Description = dto.Description
+            };
+
             await _repository.Add(task);
             await _repository.SaveChanges();
-            return task;
+
+            return new TaskResponseDto
+            {
+                Id = task.Id,
+                Title = task.Title,
+                Description = task.Description,
+                IsCompleted = task.IsCompleted,
+                CreatedAt = task.CreatedAt
+            };
         }
 
-        public async Task<bool> Update(Guid id, TaskItem updatedTask)
+        public async Task<bool> Update(Guid id, UpdateTaskDto dto)
         {
             var task = await _repository.GetById(id);
             if (task == null) return false;
 
-            task.Title = updatedTask.Title;
-            task.Description = updatedTask.Description;
-            task.IsCompleted = updatedTask.IsCompleted;
+            task.Title = dto.Title;
+            task.Description = dto.Description;
+            task.IsCompleted = dto.IsCompleted;
             task.UpdatedAt = DateTime.UtcNow;
 
             await _repository.Update(task);

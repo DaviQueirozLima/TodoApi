@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo API</title>
+</head>
+<body>
+    <h1>Minha API está rodando</h1>
+
+    <button onclick="buscar()">Buscar tarefas</button>
+
+    <pre id="result"></pre>
+
+    <script>
+        async function buscar() {
+            const res = await fetch('http://api:8080/api/tasks');
+            const data = await res.json();
+            document.getElementById('result').innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>

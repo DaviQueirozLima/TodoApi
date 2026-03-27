@@ -1,15 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using TodoApi.Data;
+using TodoApi.Repositories;
+using TodoApi.Service;
+using TodoApi.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services to the container
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Banco de dados (PostgreSQL)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskService, TaskService>();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Swagger (ambiente dev)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -21,5 +32,26 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    var retries = 5;
+    while (retries > 0)
+    {
+        try
+        {
+            db.Database.Migrate();
+            break;
+        }
+        catch
+        {
+            retries--;
+            Thread.Sleep(5000);
+        }
+    }
+}
 
 app.Run();

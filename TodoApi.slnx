@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="Testes/Testes.csproj" Id="ba0e3601-57da-4371-9790-b15078973e84" />
   <Project Path="TodoApi/TodoApi.csproj" />
 </Solution>
